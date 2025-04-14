@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musify</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #000000;
+            color: #fff;
+            margin: 0;
+            padding: 0;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1000;
+            background-color: #1DB954;
+            color: white;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            animation: slideDown 0.004s ease-in-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                transform: translateY(-100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .sidebar {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background-color: #181818;
+            padding: 20px;
+            box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .main-content {
+            margin-left: 260px; /* Adjust to avoid collision with the sidebar */
+            margin-top: 80px; /* Adjust to avoid collision with the navbar */
+            padding: 20px;
+            animation: fadeInContent 1s ease-in-out;
+        }
+
+        @keyframes fadeInContent {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .music-player {
+            background: #080909;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            animation: popUp 0.7s ease-in-out;
+        }
+
+        @keyframes popUp {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .music-player img {
+            width: 150px;
+            margin-bottom: 15px;
+            animation: rotateAlbum 5s linear infinite;
+        }
+
+        @keyframes rotateAlbum {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .controls button {
+            background: none;
+            border: none;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: transform 0.3s ease, background 0.3s ease;
+        }
+
+        .controls button:hover {
+            background: #1ed760;
+            transform: scale(1.1);
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 5px;
+            background: #f1e8e8;
+            margin: 15px 0;
+            position: relative;
+            cursor: pointer;
+            overflow: hidden;
+            animation: slideInProgress 1s ease-in-out;
+        }
+
+        @keyframes slideInProgress {
+            from {
+                width: 0;
+            }
+            to {
+                width: 100%;
+            }
+        }
+
+        .progress-bar .progress {
+            height: 100%;
+            background: #1DB954;
+            width: 0;
+            transition: width 0.2s ease-in-out;
+        }
+
+        .volume-control input {
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .volume-control input:hover {
+            transform: scale(1.05);
+        }
+
+        .genres {
+            position: fixed;
+            top: 60px;
+            right: 0;
+            width: 250px;
+            height: calc(100% - 60px);
+            background-color: #181818;
+            padding: 20px;
+            box-shadow: -2px 0 5px rgba(0, 0, 0, 0.5);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .genres h3 {
+            color: #fff;
+            margin-bottom: 15px;
+        }
+
+        .genres ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .genres ul li {
+            margin-bottom: 10px;
+        }
+
+        .genres ul li a {
+            color: #1DB954;
+            text-decoration: none;
+            font-size: 16px;
+        }
+
+        .genres ul li a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="logo">
+            <div style="text-align: center; width: 100%; position: absolute; left: 0;">
+                <a href="#" style="font-size: 20px; font-weight: bold; color: white; text-decoration: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">MUSIFY</a>
+            </div>
+        </div>
+        <div class="nav-links">                 
+            <a href="#">Premium</a>
+            <a href="#">Support</a>
+            <a href="#">Download</a>
+            <a href="#">Sign Up</a>
+        </div>
+    </nav>
+
+    <div class="sidebar">
+        <h3>Browse</h3>
+        <ul>
+            <li>
+                <input type="text" id="artist-search" placeholder="Search Artists..." style="width: 100%; padding: 8px; border-radius: 5px; border: none; outline: none;" oninput="searchArtists()">
+                <ul id="artist-list" style="list-style: none; padding: 0; margin-top: 10px; color: #fff;"></ul>
+            </li>
+        </ul>
+        <h3>Playlists</h3>
+        <ul>
+            <div style="background-color: #282828; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3); padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                <li><a href="https://youtube.com/playlist?list=PL0XcimHJJl35Y_CWKNsgo8iFsgY0YXMaP&si=jDZDj035xP6Mjwj6" target="_blank" style="color: #1DB954; text-decoration: none;">Masoom Sharma</a></li>
+                <li><a href="https://youtube.com/playlist?list=PL0XcimHJJl36WLCaEY0Lk1vYnPgZJ-_yn&si=TR8OFz4Gd1G-F1VU" target="_blank" style="color: #1DB954; text-decoration: none;">SMW 5911</a></li>
+                <li><a href="#" style="color: #1DB954; text-decoration: none;">Add More +</a></li>
+            </div>
+        </ul>
+        <h3>My Favourites</h3>
+        <ul>
+            <li><a href="https://youtu.be/DobkFYlEwLs?si=a4Ay4JjruzqqwY0q" target="_blank" style="color: #1DB954; text-decoration: none;">Gundey Dore pe - Masoom Sharma</a></li>
+            <li><a href="https://youtu.be/2cLTT_bEqTg?si=RM38mPXl6uE5r_Ft" target="_blank" style="color: #1DB954; text-decoration: none;">Sanju - Sidhu Moosewala</a></li>
+            <li><a href="https://youtu.be/OQi2Z6Im8uQ?si=jf3TItaNLsfe5xcl" target="_blank" style="color: #1DB954; text-decoration: none;">Har kisi ko - Arijit Singh</a></li>
+            <li><a href="https://youtu.be/SSgRiQ6vACg?si=RaLqJrwuk9PbQcew" target="_blank" style="color: #1DB954; text-decoration: none;">Aja piya tohe pyaar du - Lata Mangeshkar</a></li>
+        </ul>
+    </div>
+
+    <div class="genres">
+        <h3>Genres</h3>
+        <ul>
+            <li><a href="https://youtu.be/YEf_hnXBbyI?si=Jmny4Xa39UrrFFBv" target="_blank" style="color: #1DB954; text-decoration: none;">HIP HOP</a></li>
+            <li><a href="https://youtu.be/t10sQb0Zmjs?si=g3t8BmWrwQB3EUjd" target="_blank" style="color: #1DB954; text-decoration: none;">ROMANCE</a></li>
+            <li><a href="https://youtu.be/_uUdJalMaF8?si=tF2vzdl6nUQJV_kJ" target="_blank" style="color: #1DB954; text-decoration: none;">BOLLYWOOD</a></li>
+            <li><a href="https://youtu.be/4NRXx6U8ABQ?si=lN14OWg1TkiaPLcU" target="_blank" style="color: #1DB954; text-decoration: none;">HOLLYWOOD</a></li>
+            <li><a href="https://youtu.be/aFWDOFg7X2A?si=cRjl_7eDKJ0I9cey" target="_blank" style="color: #1DB954; text-decoration: none;">PUNJABI</a></li>
+            <li><a href="https://youtu.be/iYXhISeendg?si=33O9r4FN-uOkee5n" target="_blank" style="color: #1DB954; text-decoration: none;">HARYANVI</a></li>
+        </ul>
+    </div>
+ 
+    <div class="main-content" style="margin-right: 260px; position: relative; max-width: 600px; margin: 0 auto; padding: 20px; margin-top: 100px;"> <!-- Adjusted size, centered content, and added margin-top to avoid collision -->
+        <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: url('C:/Users/Lenovo/Desktop/gndy.jpg'); background-size: cover; background-position: center; filter: blur(15px); opacity: 0.5; z-index: -1;"></div>
+        <div class="music-player" style="padding: 15px;">
+            <img src="C:/Users/Lenovo/Desktop/Musify.png" alt="My Logo" style="width: 100px; height: auto;">
+            <h2>Now Playing</h2>
+            <div class="album-art" id="album-art" style="background-image: url('C:/Users/Lenovo/Desktop/gndy.jpg'); width: 150px; height: 150px; margin: 0 auto; border-radius: 10px; background-size: cover; background-position: center;"></div>
+            <p id="song-title">Gundey Dore Pe - Masoom Sharma</p>
+            <audio id="audio" src="C:\Users\Lenovo\Downloads\Gundey Dore Pe Masoom Sharma Ft Sachin Jaat New Haryanvi Badmashi Song 2025.mp3.mp3"></audio>
+            <div class="progress-bar" onclick="seekAudio(event)">
+                <div class="progress" id="progress"></div>
+            </div>
+            <div class="controls">
+                <button onclick="playAudio()">Play</button>
+                <button onclick="pauseAudio()">Pause</button>
+            </div>
+            <div class="volume-control">
+                <label for="volume">Volume:</label>
+                <input type="range" id="volume" min="0" max="1" step="0.1" onchange="setVolume(this.value)">
+            </div>
+        </div>
+    </div>
+    <script>
+        const audio = document.getElementById('audio');
+        const progressBar = document.querySelector('.progress-bar');
+        const progress = document.getElementById('progress');
+        const songTitle = document.getElementById('song-title');
+        const albumArt = document.getElementById('album-art');
+
+        function playAudio() {
+            audio.play();
+        }
+
+        function pauseAudio() {
+            audio.pause();
+        }
+
+        function setVolume(value) {
+            audio.volume = value;
+        }
+
+        function seekAudio(event) {
+            const rect = progressBar.getBoundingClientRect();
+            const offsetX = event.clientX - rect.left;
+            const width = rect.width;
+            const percentage = offsetX / width;
+            audio.currentTime = percentage * audio.duration;
+        }
+
+        function playSong(title, src, albumArtUrl) {
+            songTitle.textContent = title;
+            audio.src = src;
+            albumArt.style.backgroundImage = `url('${albumArtUrl}')`;
+            playAudio();
+        }
+
+        const artists = ["Arijit Singh", "Shreya Ghoshal", "Badshah", "Neha Kakkar", "Sonu Nigam", "Sunidhi Chauhan","Sidhu Moosewala", "Masoom Sharma", "Karan Aujla", "Gurnam Bhullar", "Jass Manak", "Ninja", "B Praak", "Guru Randhawa", "Diljit Dosanjh"];
+        function searchArtists() {
+            const searchInput = document.getElementById('artist-search').value.toLowerCase();
+            const artistList = document.getElementById('artist-list');
+            artistList.innerHTML = '';
+
+            if (searchInput) {
+                const filteredArtists = artists.filter(artist => artist.toLowerCase().includes(searchInput));
+                filteredArtists.forEach(artist => {
+                    const li = document.createElement('li');
+                    li.textContent = artist;
+                    artistList.appendChild(li);
+                });
+            }
+        }
+    </script>
+</body>
+</html>
